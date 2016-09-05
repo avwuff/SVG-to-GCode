@@ -1,0 +1,4 @@
+Version 1.2.0
+- Default to 72 DPI if the DPI could not be automatically determined
+- Support for selecting and deleting multiple line segments on the left
+- Export tweaks

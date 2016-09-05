@@ -1,0 +1,10 @@
+frmInterface = 50, 50, 1816, 1377, C, 63, 54, 1829, 1019, C
+Bezier = 100, 100, 1454, 608, C
+SVGParse = 426, 125, 2192, 1331, 
+Polygons = 76, 80, 1934, 1172, 
+GeneralFunctions = 0, 0, 0, 0, C
+frmScale = 269, 335, 1780, 1278, , 250, 250, 2016, 1215, C
+Rasterize = 0, 0, 0, 0, C
+ColorCode = 0, 0, 0, 0, C
+mcPopupMenu = 0, 0, 0, 0, C
+frmTile = 0, 0, 0, 0, C, 0, 0, 0, 0, C

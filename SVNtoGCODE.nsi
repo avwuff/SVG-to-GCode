@@ -3,7 +3,7 @@
 ;Written by Joost Verburg
 
 !define MUI_PRODUCT "SVGtoGCODE"
-!define MUI_VERSION "1.2.0"
+!define MUI_VERSION "1.2.1"
 SetCompressor /solid lzma
 
 !include "MUI.nsh"
@@ -171,7 +171,7 @@ SetCompressor /solid lzma
 
   !define TEMP $R0
 
-  !define VBFILESDIR "..\_Library"
+  !define VBFILESDIR "_Library"
   !define SHELLFOLDERS "Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders"
 
   Var MUI_TEMP

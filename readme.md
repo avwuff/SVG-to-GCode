@@ -1,4 +1,4 @@
-This program can read certain SVG files and can produce GCode output.
+This program can read Inkscape and Illustrator SVG files and can produce GCode output.
 
 More to come.
 

@@ -2072,6 +2072,7 @@ Function exportGCODE(outFile As String, feedRate As Double, PlungeZ As Boolean)
     ' Go to the corners
     Print #f, "F" & Round(feedRate, 5)
     Print #f, "G20 (Units are in Inches)"
+    Print #f, "G61 (Go to exact corners)" ' Added Sep 21, 2016
     
     ' Turn on the spindle
     'Print #f, "M3 S1"

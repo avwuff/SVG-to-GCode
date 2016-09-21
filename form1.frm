@@ -6,15 +6,24 @@ Begin VB.Form frmInterface
    AutoRedraw      =   -1  'True
    Caption         =   "SVG to GCODE by Avatar-X"
    ClientHeight    =   11010
-   ClientLeft      =   170
-   ClientTop       =   560
-   ClientWidth     =   15240
+   ClientLeft      =   165
+   ClientTop       =   555
+   ClientWidth     =   19305
    LinkTopic       =   "Form1"
-   ScaleHeight     =   1101
+   ScaleHeight     =   734
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   1524
+   ScaleWidth      =   1287
    StartUpPosition =   3  'Windows Default
    Begin VB.ComboBox cFeedRate 
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       Height          =   315
       Left            =   5760
       TabIndex        =   5
@@ -27,9 +36,9 @@ Begin VB.Form frmInterface
       BorderStyle     =   0  'None
       Height          =   2715
       Left            =   660
-      ScaleHeight     =   272
+      ScaleHeight     =   181
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   386
+      ScaleWidth      =   257
       TabIndex        =   4
       Top             =   60000
       Width           =   3855
@@ -38,12 +47,21 @@ Begin VB.Form frmInterface
       AutoRedraw      =   -1  'True
       BackColor       =   &H00C0FFFF&
       BorderStyle     =   0  'None
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       Height          =   4200
       Index           =   1
       Left            =   0
-      ScaleHeight     =   420
+      ScaleHeight     =   280
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   30
+      ScaleWidth      =   20
       TabIndex        =   3
       Top             =   840
       Width           =   300
@@ -52,12 +70,21 @@ Begin VB.Form frmInterface
       AutoRedraw      =   -1  'True
       BackColor       =   &H00C0FFFF&
       BorderStyle     =   0  'None
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       Height          =   300
       Index           =   0
       Left            =   300
-      ScaleHeight     =   30
+      ScaleHeight     =   20
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   230
+      ScaleWidth      =   153
       TabIndex        =   2
       Top             =   540
       Width           =   2295
@@ -70,7 +97,7 @@ Begin VB.Form frmInterface
       _Version        =   393216
    End
    Begin VB.ListBox List1 
-      Height          =   6440
+      Height          =   6300
       Left            =   11460
       MultiSelect     =   2  'Extended
       TabIndex        =   1
@@ -82,9 +109,9 @@ Begin VB.Form frmInterface
       BackColor       =   &H00FFFFFF&
       Height          =   7815
       Left            =   300
-      ScaleHeight     =   778
+      ScaleHeight     =   517
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   1108
+      ScaleWidth      =   737
       TabIndex        =   0
       Top             =   840
       Width           =   11115
@@ -92,30 +119,30 @@ Begin VB.Form frmInterface
    Begin vbalTBar6.cReBar cReBar1 
       Left            =   0
       Top             =   0
-      _ExtentX        =   5203
-      _ExtentY        =   864
+      _ExtentX        =   5212
+      _ExtentY        =   873
    End
    Begin vbalTBar6.cToolbar TB1 
       Height          =   435
       Left            =   3000
       Top             =   0
       Width           =   2295
-      _ExtentX        =   4039
-      _ExtentY        =   758
+      _ExtentX        =   4048
+      _ExtentY        =   767
    End
    Begin vbalIml6.vbalImageList vbalImageList1 
       Left            =   960
       Top             =   9420
-      _ExtentX        =   635
-      _ExtentY        =   635
+      _ExtentX        =   953
+      _ExtentY        =   953
       IconSizeX       =   24
       IconSizeY       =   24
       ColourDepth     =   32
-      Size            =   24600
+      Size            =   31980
       Images          =   "form1.frx":0000
       Version         =   131072
-      KeyCount        =   10
-      Keys            =   "ÿÿÿÿÿÿÿÿÿ"
+      KeyCount        =   13
+      Keys            =   "ÿÿÿÿÿÿÿÿÿÿÿÿ"
    End
 End
 Attribute VB_Name = "frmInterface"
@@ -509,17 +536,17 @@ Private Sub Form_Load()
         .AddButton "Scale", 1, , , "Scale", CTBAutoSize, "scale"
         .AddButton "Export", 2, , , "Export", CTBAutoSize, "export"
         
-        .AddButton "Specify the Feed Rate used to cut your design", -1, , , "Feed Rate:", CTBAutoSize, "rate"
+        .AddButton "Specify the Feed Rate used to cut your design", 10, , , "Feed Rate:", CTBAutoSize, "rate"
         .AddControl cFeedRate.Hwnd
         
         .AddButton "Zoom In", 3, , , "Zoom In", CTBAutoSize, "zoomin"
         .AddButton "Zoom Out", 4, , , "Zoom Out", CTBAutoSize, "zoomout"
         
         .AddButton "Display the Non-Cut Paths", 6, , , "Show NonCuts", CTBAutoSize Or CTBCheck, "noncut"
-        .AddButton "Plunge the Z (for engraver)", , , , "Z Plunge", CTBAutoSize Or CTBCheck, "zplunge"
+        .AddButton "Plunge the Z (for engraver)", 9, , , "Z Plunge", CTBAutoSize Or CTBCheck, "zplunge"
         .ButtonChecked("noncut") = True
         
-        .AddButton "Raster-fill the shapes by line.", 9, , , "Raster Fill", CTBAutoSize, "fill"
+        .AddButton "Raster-fill the shapes by line.", 11, , , "Raster Fill", CTBAutoSize, "fill"
         
         
         
@@ -529,7 +556,7 @@ Private Sub Form_Load()
         .AddButton "Split into multiple GCode files by page", 7, , , "Split by Pages", CTBAutoSize, "pages"
         .AddButton "Duplicate the design in multiple rows and columns", 8, , , "Tile", CTBAutoSize, "tile"
         
-        .AddButton "Rotate 90", , , , "Rotate 90", CTBAutoSize, "rotate90"
+        .AddButton "Rotate 90", 12, , , "Rotate 90", CTBAutoSize, "rotate90"
         
         
         '.AddButton "box", 5, , , "box", CTBAutoSize, "box"

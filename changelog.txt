@@ -1,3 +1,8 @@
+4:44 PM 9/21/2016
+Version 1.2.1  
+- Added G61 command to start of file.
+- Added missing icons
+
 Version 1.2.0
 - Default to 72 DPI if the DPI could not be automatically determined
 - Support for selecting and deleting multiple line segments on the left

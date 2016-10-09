@@ -40,6 +40,7 @@ Public Const PI = 3.141592654
 Public GLOBAL_DPI As Double
 
 Public EXPORT_EXTENTS_X As Double, EXPORT_EXTENTS_Y As Double
+Public LastExportPath As String
 
 
 Function parseSVG(inFile As String)
@@ -1340,7 +1341,7 @@ Function isNumChar(char As String) As Boolean
 End Function
 
 
-Function getAttr(attr As ChilkatXml, attrName As String, Optional defaultValue)
+Function getAttr(attr As ChilkatXml, attrName As String, Optional DefaultValue)
 
     getAttr = attr.GetAttrValue(attrName)
 
@@ -2019,7 +2020,7 @@ Public Sub SwapLine(ByRef A As typLine, ByRef b As typLine)
 
 End Sub
 
-Function exportGCODE(outFile As String, feedRate As Double, PlungeZ As Boolean)
+Function exportGCODE(outFile As String, feedRate As Double, PlungeZ As Boolean, PPIMode As Boolean, PPIVal As Long, LoopMode As Boolean, Loops As Long, RaiseDist As Double)
 
 
     ' Export GCODE!
@@ -2042,181 +2043,209 @@ Function exportGCODE(outFile As String, feedRate As Double, PlungeZ As Boolean)
     
     If Dir(outFile) <> "" Then Kill outFile
     Open outFile For Append As f
+        
+        
+        ' Get the extents
+        Dim maxX As Double
+        Dim maxY As Double
+        
+        Dim greyLevel As Double
+        
+        Dim isDefocused As Boolean
+        Dim wasDefocused As Boolean
+        
+        Dim cutCount As Long
+        Dim cuts As Long ' Defocusde cuts cut the same thing many times
+        
+        
+        
+        
     
+        maxX = EXPORT_EXTENTS_X
+        maxY = EXPORT_EXTENTS_Y
+        
     
-    ' Get the extents
-    Dim maxX As Double
-    Dim maxY As Double
-    
-    Dim greyLevel As Double
-    
-    Dim isDefocused As Boolean
-    Dim wasDefocused As Boolean
-    
-    Dim cutCount As Long
-    Dim cuts As Long ' Defocusde cuts cut the same thing many times
-    
-    
-    
-    
-
-    maxX = EXPORT_EXTENTS_X
-    maxY = EXPORT_EXTENTS_Y
-    
-
-    ' Make it 5 inches high
-    scalar = 1
-    'scalar = 0.01
-    
-    
-    ' Go to the corners
-    Print #f, "F" & Round(feedRate, 5)
-    Print #f, "G20 (Units are in Inches)"
-    Print #f, "G61 (Go to exact corners)" ' Added Sep 21, 2016
-    
-    ' Turn on the spindle
-    'Print #f, "M3 S1"
-    
-    'Print #F, "G1 X0 Y0"
-    'Print #F, "G1 X" & Round(maxX * scalar, 5) & " Y0"
-    'Print #F, "G1 X" & Round(maxX * scalar, 5) & " Y" & Round(maxY * scalar, 5)
-    'Print #F, "G1 X0 Y" & Round(maxY * scalar, 5)
-
-    tLayer = "---"
-
-    For i = 1 To UBound(pData)
-        With pData(i)
-            If UBound(.Points) > 0 Then
-                ' Set the feed rate.
-                'greyLevel = .greyLevel / GREYLEVELS
-                'Print #f, "F" & CLng((maxFeedRate - minFeedRate) * greyLevel) + minFeedRate
+        ' Make it 5 inches high
+        scalar = 1
+        'scalar = 0.01
+        
+        
+        ' Go to the corners
+        Print #f, "F" & Round(feedRate, 5)
+        Print #f, "G20 (Units are in Inches)"
+        Print #f, "G61 (Go to exact corners)" ' Added Sep 21, 2016
+        
+        If PPIMode Then
+            Print #f, "S" & PPIVal & " (PPI mode with this many pulses per inch)"
+        End If
+        
+        If LoopMode Then
+        
+            Print #f, "#201 = " & Loops & " (number of passes)"
+            Print #f, "#200 = " & Round(RaiseDist * 0.0393701, 6) & " (move the bed up incrementally by this much in inches)"
+            Print #f, "#300 = 0 (bed movement distance storage variable)"
+            Print #f, "#100 = 1 (layer number storage variable)"
             
-                If .LayerID <> "Cut Boxes" Then
+            Print #f, "G1 W0.00000 (make sure bed is 0.0000 before you cut first pass)"
+            Print #f, "o101 WHILE [#100 LE #201] (the number of passes is that the number after LE, LE = less or equal to)"
+        
+        End If
+        
+        
+        ' Turn on the spindle
+        'Print #f, "M3 S1"
+        
+        'Print #F, "G1 X0 Y0"
+        'Print #F, "G1 X" & Round(maxX * scalar, 5) & " Y0"
+        'Print #F, "G1 X" & Round(maxX * scalar, 5) & " Y" & Round(maxY * scalar, 5)
+        'Print #F, "G1 X0 Y" & Round(maxY * scalar, 5)
+    
+        tLayer = "---"
+    
+        For i = 1 To UBound(pData)
+            With pData(i)
+                If UBound(.Points) > 0 Then
+                    ' Set the feed rate.
+                    'greyLevel = .greyLevel / GREYLEVELS
+                    'Print #f, "F" & CLng((maxFeedRate - minFeedRate) * greyLevel) + minFeedRate
                 
-                    If tLayer <> .LayerID Then
-                        
-                        wasDefocused = isDefocused
-                        isDefocused = False
-                        If layerInfo.Exists(.LayerID) Then
+                    If .LayerID <> "Cut Boxes" Then
+                    
+                        If tLayer <> .LayerID Then
                             
-                            If layerInfo.Item(.LayerID).Exists("pausebefore") Then
-                                Print #f, "(MSG,Change Laser Power!)"
-                                Print #f, "M0"
-                            End If
-                            
-                            ' Are we defocused on this layer?
-                            If layerInfo(.LayerID).Exists("defocused") Then
-                                isDefocused = True
+                            wasDefocused = isDefocused
+                            isDefocused = False
+                            If layerInfo.Exists(.LayerID) Then
                                 
-                                ' Bring it down
-                                Print #1, "F100 (Increated feed rate for defocused cuts)"
-                                Print #1, "G0 W-" & layerInfo(.LayerID)("defocused")
-                                
-                            End If
-                        
-                        End If
-                        
-                        If wasDefocused And Not isDefocused Then
-                            ' Bring the W back up
-                            Print #1, "G0 W0"
-                            ' Reset the feed rate
-                            Print #f, "F" & Round(feedRate, 5)
-                        End If
-                        
-                        tLayer = .LayerID
-                    End If
-                    
-                    Dim lastCutting As Boolean
-                    
-                    lastCutting = False
-                    cutCount = 1
-                    If isDefocused Then cutCount = 20
-                    
-                    
-                    For cuts = 1 To cutCount
-                        
-                        For j = 1 To UBound(.Points)
-                            With .Points(j)
-                                
-                                If j = 1 Then ' First point, just GO there.
-                                    Print #f, "G0 X" & Round(.x * scalar, 5) & " Y" & Round((maxY - .y) * scalar, 5)
-                                    'Print #f, "G1 z-0.0010"
-                                    
-                                    ' Turn on the spindle
-                                    Print #f, "M3 S1"
-                                    'Print #f, "G0 Z -0.0100"
-                                Else
-                                    t = "G1 X" & Round(.x * scalar, 5) & " Y" & Round((maxY - .y) * scalar, 5)
-                                    
-                                    ' Are we CUTTING to this point, or not?
-                                    If lastCutting And pData(i).Points(j - 1).noCut = 1 Then
-                                        
-                                        If PlungeZ Then
-                                            Print #f, "G0 Z 0.2"
-                                        Else
-                                            t = t & " M63 P0" ' STOP cutting
-                                        End If
-                                        
-                                        
-                                        lastCutting = False
-                                    ElseIf Not lastCutting And pData(i).Points(j - 1).noCut = 0 Then
-                                        
-                                        If PlungeZ Then
-                                            Print #f, "G0 Z -0.5"
-                                        Else
-                                            t = t & " M62 P0" ' START cutting
-                                        End If
-                                        
-                                        lastCutting = True
-                                    End If
-                                    Print #f, t
+                                If layerInfo.Item(.LayerID).Exists("pausebefore") Then
+                                    Print #f, "(MSG,Change Laser Power!)"
+                                    Print #f, "M0"
                                 End If
-                            End With
-                        Next
+                                
+                                ' Are we defocused on this layer?
+                                If layerInfo(.LayerID).Exists("defocused") Then
+                                    isDefocused = True
+                                    
+                                    ' Bring it down
+                                    Print #1, "F100 (Increated feed rate for defocused cuts)"
+                                    Print #1, "G0 W-" & layerInfo(.LayerID)("defocused")
+                                    
+                                End If
+                            
+                            End If
+                            
+                            If wasDefocused And Not isDefocused Then
+                                ' Bring the W back up
+                                Print #1, "G0 W0"
+                                ' Reset the feed rate
+                                Print #f, "F" & Round(feedRate, 5)
+                            End If
+                            
+                            tLayer = .LayerID
+                        End If
                         
-                        If isDefocused Then
-                            ' Run the same line backwards again
-                            For j = UBound(.Points) To 1 Step -1
+                        Dim lastCutting As Boolean
+                        
+                        lastCutting = False
+                        cutCount = 1
+                        If isDefocused Then cutCount = 20
+                        
+                        
+                        For cuts = 1 To cutCount
+                            
+                            For j = 1 To UBound(.Points)
                                 With .Points(j)
-                                    If j = UBound(pData(i).Points) Then ' First point, just GO there.
+                                    
+                                    If j = 1 Then ' First point, just GO there.
                                         Print #f, "G0 X" & Round(.x * scalar, 5) & " Y" & Round((maxY - .y) * scalar, 5)
+                                        'Print #f, "G1 z-0.0010"
+                                        
+                                        ' Turn on the spindle
+                                        If PPIMode Then
+                                            Print #f, "M3"
+                                        Else
+                                            Print #f, "M3 S1"
+                                        End If
+                                        'Print #f, "G0 Z -0.0100"
                                     Else
                                         t = "G1 X" & Round(.x * scalar, 5) & " Y" & Round((maxY - .y) * scalar, 5)
+                                        
+                                        ' Are we CUTTING to this point, or not?
                                         If lastCutting And pData(i).Points(j - 1).noCut = 1 Then
-                                            t = t & " M63 P0" ' STOP cutting
+                                            
+                                            If PlungeZ Then
+                                                Print #f, "G0 Z 0.2"
+                                            Else
+                                                t = t & " M63 P0" ' STOP cutting
+                                            End If
+                                            
+                                            
                                             lastCutting = False
                                         ElseIf Not lastCutting And pData(i).Points(j - 1).noCut = 0 Then
-                                            t = t & " M62 P0" ' START cutting
+                                            
+                                            If PlungeZ Then
+                                                Print #f, "G0 Z -0.5"
+                                            Else
+                                                t = t & " M62 P0" ' START cutting
+                                            End If
+                                            
                                             lastCutting = True
                                         End If
                                         Print #f, t
                                     End If
                                 End With
                             Next
-                        End If
-                    Next
+                            
+                            If isDefocused Then
+                                ' Run the same line backwards again
+                                For j = UBound(.Points) To 1 Step -1
+                                    With .Points(j)
+                                        If j = UBound(pData(i).Points) Then ' First point, just GO there.
+                                            Print #f, "G0 X" & Round(.x * scalar, 5) & " Y" & Round((maxY - .y) * scalar, 5)
+                                        Else
+                                            t = "G1 X" & Round(.x * scalar, 5) & " Y" & Round((maxY - .y) * scalar, 5)
+                                            If lastCutting And pData(i).Points(j - 1).noCut = 1 Then
+                                                t = t & " M63 P0" ' STOP cutting
+                                                lastCutting = False
+                                            ElseIf Not lastCutting And pData(i).Points(j - 1).noCut = 0 Then
+                                                t = t & " M62 P0" ' START cutting
+                                                lastCutting = True
+                                            End If
+                                            Print #f, t
+                                        End If
+                                    End With
+                                Next
+                            End If
+                        Next
+                        
+                        'Print #F, "G0 Z0.0010"
+                        ' Turn off the spindle
+                        Print #f, "M5"
+                        If PlungeZ Then Print #f, "G0 Z 0.2"
+                        
+                        'Print #f, "G0 Z 0.0100"
+                        
+                        'Print #f, "G1 Z0.0010"
+                        Print #f, ""
+                    End If
                     
-                    'Print #F, "G0 Z0.0010"
-                    ' Turn off the spindle
-                    Print #f, "M5"
-                    If PlungeZ Then Print #f, "G0 Z 0.2"
-                    
-                    'Print #f, "G0 Z 0.0100"
-                    
-                    'Print #f, "G1 Z0.0010"
-                    Print #f, ""
                 End If
                 
-            End If
+            End With
+        Next
             
-        End With
-    Next
+        Print #f, "M5"
+        If PlungeZ Then Print #f, "G0 Z 0.2"
         
-    Print #f, "M5"
-    If PlungeZ Then Print #f, "G0 Z 0.2"
-    Print #f, "M30"
-    'print #f, "G0 X0 Y0
-    Close #1
+        If LoopMode Then
+            Print #f, "#300 = [#200*#100]"
+            Print #f, "G1 W#300 (move the bed up according to the layer its on)"
+            Print #f, "#100 = [#100+1] (add one to the layer counter)"
+            Print #f, "o101 ENDWHILE"
+        End If
+        
+        Print #f, "M30"
+    Close #f
 
 End Function
 

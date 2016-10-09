@@ -1,10 +1,11 @@
-frmInterface = 557, 355, 2323, 1682, , 423, 81, 2189, 1046, C
+frmInterface = 125, 86, 1891, 1413, Z, 42, 55, 1808, 1020, C
 Bezier = 100, 100, 1454, 608, C
-SVGParse = 426, 125, 2192, 1781, 
+SVGParse = 75, 31, 1841, 1378, 
 Polygons = 76, 80, 1934, 1172, C
-GeneralFunctions = 0, 0, 0, 0, C
+GeneralFunctions = 26, 26, 1091, 829, 
 frmScale = 269, 335, 1780, 1278, C, 250, 250, 2016, 1215, C
 Rasterize = 0, 0, 0, 0, C
 ColorCode = 0, 0, 0, 0, C
 mcPopupMenu = 0, 0, 0, 0, C
-frmTile = 0, 0, 0, 0, C, 390, 390, 3009, 1693, C
+frmTile = 0, 0, 0, 0, C, 390, 390, 2404, 1693, C
+frmExport = 208, 208, 1273, 1011, , 182, 182, 1247, 985, C

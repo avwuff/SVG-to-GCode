@@ -2,11 +2,11 @@ Attribute VB_Name = "GeneralFunctions"
 'General functions that could be used in any project.
 Option Explicit
 Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
-Public Declare Function GetMenu Lib "user32" (ByVal hWnd As Long) As Long
+Public Declare Function GetMenu Lib "user32" (ByVal Hwnd As Long) As Long
 Public Declare Function GetSubMenu Lib "user32" (ByVal hMenu As Long, ByVal nPos As Long) As Long
 Public Declare Function SetMenuDefaultItem Lib "user32" (ByVal hMenu As Long, ByVal uItem As Long, ByVal fByPos As Long) As Long
 Public Declare Function GetKeyState Lib "user32" (ByVal nVirtKey As Long) As Integer
-Private Declare Function SetWindowPos Lib "user32" (ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cX As Long, ByVal cY As Long, ByVal wFlags As Long) As Long
+Private Declare Function SetWindowPos Lib "user32" (ByVal Hwnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cX As Long, ByVal cY As Long, ByVal wFlags As Long) As Long
 
 Public Declare Function MakeSureDirectoryPathExists Lib "IMAGEHLP.DLL" (ByVal DirPath As String) As Long
 
@@ -23,7 +23,7 @@ End Type
 Public debug_noLog As Boolean
 
 Public Type SHFILEOPSTRUCT
-        hWnd As Long
+        Hwnd As Long
         wFunc As Long
         pFrom As String
         pTo As String
@@ -79,7 +79,7 @@ End Function
 Function getFileNameNoExten(inName As String) As String
     Dim e As Long
     e = InStrRev(inName, ".")
-    If e > 0 Then getFileNameNoExten = Left(inName, e - 1)
+    If e > 0 Then getFileNameNoExten = left(inName, e - 1)
 End Function
 
 Function getFolderNameFromPath(inPth As String) As String
@@ -90,23 +90,23 @@ Function getFolderNameFromPath(inPth As String) As String
     If e = 0 Then e = InStrRev(inPth, "/")
     
     If e > 0 Then
-        getFolderNameFromPath = Left(inPth, e - 1)
+        getFolderNameFromPath = left(inPth, e - 1)
     End If
 End Function
 
 ' DOES NOT RECURSE
 ' TODO: Make it take a file mask.
 Function getSizeOfFolder(pth As String) As typGenSizeInfo
-    Dim a As String
+    Dim A As String
     
-    a = myDir(pth & "\*.*")
-    Do Until a = ""
-        Select Case LCase(getFileExten(a))
+    A = myDir(pth & "\*.*")
+    Do Until A = ""
+        Select Case LCase(getFileExten(A))
             Case "jpg", "jpeg", "png", "gif", "wav"
-                getSizeOfFolder.totalSize = getSizeOfFolder.totalSize + FileLen(pth & "\" & a)
+                getSizeOfFolder.totalSize = getSizeOfFolder.totalSize + FileLen(pth & "\" & A)
                 getSizeOfFolder.numFiles = getSizeOfFolder.numFiles + 1
         End Select
-        a = Dir
+        A = Dir
     Loop
 End Function
 
@@ -115,17 +115,17 @@ End Function
 
 ' GENERAL
 Public Function Swap(ByRef in1, ByRef in2)
-    Dim B
-    B = in1
+    Dim b
+    b = in1
     in1 = in2
-    in2 = B
+    in2 = b
 End Function
 
 ' COLOR
 
 Function makeVBColor(inHex As String) As Long
     ' Turns FF0033 into the VB color.
-    Dim R As Long, g As Long, B As Long
+    Dim R As Long, G As Long, b As Long
     
     If Len(inHex) < 6 Then
         inHex = Replace(Space(6 - Len(inHex)), " ", "0") & inHex
@@ -133,10 +133,10 @@ Function makeVBColor(inHex As String) As Long
     
     If Len(inHex) = 6 Then
         R = Val("&H" & Mid(inHex, 1, 2))
-        g = Val("&H" & Mid(inHex, 3, 2))
-        B = Val("&H" & Mid(inHex, 5, 2))
+        G = Val("&H" & Mid(inHex, 3, 2))
+        b = Val("&H" & Mid(inHex, 5, 2))
         
-        makeVBColor = (B * 256 * 256) + (g * 256) + R
+        makeVBColor = (b * 256 * 256) + (G * 256) + R
     Else
         makeVBColor = 0
     End If
@@ -173,7 +173,7 @@ Function Escape(inTxt As String) As String
     ' Escape the text.
     Dim i As Long
     Dim outText As String
-    Dim B As String
+    Dim b As String
     
     Escape = inTxt
     
@@ -230,7 +230,7 @@ Function Unescape(ByVal inSt As String) As String
                 nVal = Val("&H" & nTwo)
                 
                 If nVal > 0 Then
-                    inSt = Left(inSt, e - 1) & Chr(nVal) & Right(inSt, Len(inSt) - e - 2)
+                    inSt = left(inSt, e - 1) & Chr(nVal) & Right(inSt, Len(inSt) - e - 2)
                 End If
             End If
         End If
@@ -298,13 +298,13 @@ Function separateURL(inURL As String, ByRef Host As String, ByRef path As String
     If e > 0 Then
         
         ' remove http://
-        protocol = Left(URL, e + 2)
+        protocol = left(URL, e + 2)
         URL = Right(URL, Len(URL) - e - 2)
         
         
         e = InStr(URL, "/")
         If e > 0 Then
-            Host = Left(URL, e - 1)
+            Host = left(URL, e - 1)
             path = Right(URL, Len(URL) - e + 1)
         Else
             Host = URL
@@ -314,18 +314,18 @@ Function separateURL(inURL As String, ByRef Host As String, ByRef path As String
         f = InStrRev(Host, "@")
         If e > 0 And e > f Then
             port = Val(Right(Host, Len(Host) - e))
-            Host = Left(Host, e - 1)
+            Host = left(Host, e - 1)
         End If
         
         e = InStr(Host, "@")
         If e > 0 Then
-            userpass = Left(Host, e - 1)
+            userpass = left(Host, e - 1)
             Host = Right(Host, Len(Host) - e)
             
             e = InStr(userpass, ":")
             If e > 0 Then
                 ' user and pass
-                UserN = Left(userpass, e - 1)
+                UserN = left(userpass, e - 1)
                 PassW = Right(userpass, Len(userpass) - e)
             Else
                 UserN = userpass
@@ -390,63 +390,63 @@ End Function
 
 Function secsToTime(inSecs As Double) As String
     ' Convert 3232.587329 to a nice number like 4:56:22.31
-    Dim s As Double
-    s = inSecs
-    Dim h As Long, M As Long
+    Dim S As Double
+    S = inSecs
+    Dim H As Long, M As Long
     
-    h = Int(s / 3600)
-    s = s - (h * 3600)
+    H = Int(S / 3600)
+    S = S - (H * 3600)
     
-    M = Int(s / 60)
-    s = s - (M * 60)
+    M = Int(S / 60)
+    S = S - (M * 60)
     
-    secsToTime = h & ":" & Format(M, "00") & ":" & Format(Round(s, 2), "00.00")
+    secsToTime = H & ":" & Format(M, "00") & ":" & Format(Round(S, 2), "00.00")
 End Function
 
 Function secsToTime2(inSecs As Double) As String
     ' Convert 3232.587329 to a nice number like 4:56:22.31
-    Dim s As Double
-    s = inSecs
-    Dim h As Long, M As Long
+    Dim S As Double
+    S = inSecs
+    Dim H As Long, M As Long
     
-    h = Int(s / 3600)
-    s = s - (h * 3600)
+    H = Int(S / 3600)
+    S = S - (H * 3600)
     
-    M = Int(s / 60)
-    s = s - (M * 60)
+    M = Int(S / 60)
+    S = S - (M * 60)
     
-    secsToTime2 = h & ":" & Format(M, "00") & ":" & Format(Round(s, 2), "00")
+    secsToTime2 = H & ":" & Format(M, "00") & ":" & Format(Round(S, 2), "00")
 End Function
 Function secsToTime3(inSecs As Double) As String
     ' Convert 3232.587329 to a nice number like 4:56:22.31
-    Dim s As Double
-    s = inSecs
-    Dim h As Long, M As Long
+    Dim S As Double
+    S = inSecs
+    Dim H As Long, M As Long
     
-    h = Int(s / 3600)
-    s = s - (h * 3600)
+    H = Int(S / 3600)
+    S = S - (H * 3600)
     
-    M = Int(s / 60)
-    s = s - (M * 60)
+    M = Int(S / 60)
+    S = S - (M * 60)
     
-    secsToTime3 = h & " hours, " & M & " minutes"
+    secsToTime3 = H & " hours, " & M & " minutes"
 End Function
 
 Function Filerize(inSt As String) As String
 
     ' Turn any string of text into a valid filename.
     Dim i As Long
-    Dim B As Long
+    Dim b As Long
     For i = 1 To Len(inSt)
-        B = Asc(Mid(inSt, i, 1))
-        If (B >= 65 And B <= 90) _
-            Or (B >= 48 And B <= 57) _
-            Or (B >= 97 And B <= 122) _
-            Or (B >= 35 And B <= 41) _
-            Or (B >= 44 And B <= 46) _
-            Or B = 32 Or B = 95 Then
+        b = Asc(Mid(inSt, i, 1))
+        If (b >= 65 And b <= 90) _
+            Or (b >= 48 And b <= 57) _
+            Or (b >= 97 And b <= 122) _
+            Or (b >= 35 And b <= 41) _
+            Or (b >= 44 And b <= 46) _
+            Or b = 32 Or b = 95 Then
             
-                Filerize = Filerize & Chr(B)
+                Filerize = Filerize & Chr(b)
         Else
             Filerize = Filerize & "_"
         End If
@@ -518,8 +518,8 @@ Public Function GCD_Of(ByVal First_Int As Double, ByVal Second_Int As Double, By
 End Function
 
 
-Public Sub MakeTopMost(hWnd As Long)
-    SetWindowPos hWnd, HWND_TOPMOST, 0, 0, 0, 0, TOPMOST_FLAGS
+Public Sub MakeTopMost(Hwnd As Long)
+    SetWindowPos Hwnd, HWND_TOPMOST, 0, 0, 0, 0, TOPMOST_FLAGS
 End Sub
 
 Function ceiling(Number As Double) As Long
@@ -576,7 +576,7 @@ End Function
 
 Function safeLeft(inSt As String, numChr As Long) As String
     If Len(inSt) >= numChr Then
-        safeLeft = Left(inSt, numChr)
+        safeLeft = left(inSt, numChr)
     Else
         safeLeft = inSt
     End If
@@ -597,15 +597,15 @@ Function fileIntoMemory(tPath As String) As String
     On Error Resume Next
     
     Dim f As Long
-    Dim g As String
+    Dim G As String
     
-    g = Space(FileLen(tPath))
+    G = Space(FileLen(tPath))
     f = FreeFile
     Open tPath For Binary As f
-        Get #f, , g
+        Get #f, , G
     Close f
     
-    fileIntoMemory = g
+    fileIntoMemory = G
 
 End Function
 
@@ -618,17 +618,17 @@ Function GetFile(inPath As String) As String
     ' Load this file into memory.
     
     
-    Dim f As Long, g As String
+    Dim f As Long, G As String
    On Error GoTo GetFile_Error
 
     f = FreeFile
-    g = Space(FileLen(inPath))
+    G = Space(FileLen(inPath))
     
     Open inPath For Binary As f
-        Get #f, , g
+        Get #f, , G
     Close f
     
-    GetFile = g
+    GetFile = G
 
    On Error GoTo 0
    Exit Function
@@ -672,4 +672,8 @@ End Function
 Public Function HandleError(ErrLine, ErrLocation, ErrNum, ErrDesc)
     addToLog "[ERROR]", ErrLocation, ErrNum, ErrDesc, "Line " & ErrLine
     MsgBox "Error " & ErrNum & " (" & ErrDesc & ") " & ErrLocation & " (Line " & ErrLine & ")", vbCritical, App.ProductName & " ERROR"
+End Function
+
+Public Function FromCheck(inCheck As CheckBox) As Boolean
+    FromCheck = (inCheck.Value = vbChecked)
 End Function

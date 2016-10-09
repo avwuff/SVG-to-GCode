@@ -14,22 +14,6 @@ Begin VB.Form frmInterface
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   1287
    StartUpPosition =   3  'Windows Default
-   Begin VB.ComboBox cFeedRate 
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   315
-      Left            =   5760
-      TabIndex        =   5
-      Top             =   300
-      Width           =   975
-   End
    Begin VB.PictureBox Picture2 
       AutoRedraw      =   -1  'True
       AutoSize        =   -1  'True
@@ -536,14 +520,14 @@ Private Sub Form_Load()
         .AddButton "Scale", 1, , , "Scale", CTBAutoSize, "scale"
         .AddButton "Export", 2, , , "Export", CTBAutoSize, "export"
         
-        .AddButton "Specify the Feed Rate used to cut your design", 10, , , "Feed Rate:", CTBAutoSize, "rate"
-        .AddControl cFeedRate.Hwnd
+        '.AddButton "Specify the Feed Rate used to cut your design", 10, , , "Feed Rate:", CTBAutoSize, "rate"
+        '.AddControl cFeedRate.Hwnd
         
         .AddButton "Zoom In", 3, , , "Zoom In", CTBAutoSize, "zoomin"
         .AddButton "Zoom Out", 4, , , "Zoom Out", CTBAutoSize, "zoomout"
         
         .AddButton "Display the Non-Cut Paths", 6, , , "Show NonCuts", CTBAutoSize Or CTBCheck, "noncut"
-        .AddButton "Plunge the Z (for engraver)", 9, , , "Z Plunge", CTBAutoSize Or CTBCheck, "zplunge"
+        '.AddButton "Plunge the Z (for engraver)", 9, , , "Z Plunge", CTBAutoSize Or CTBCheck, "zplunge"
         .ButtonChecked("noncut") = True
         
         .AddButton "Raster-fill the shapes by line.", 11, , , "Raster Fill", CTBAutoSize, "fill"
@@ -604,15 +588,15 @@ Private Sub Form_Load()
         
     End With
     
-    With cFeedRate
-        .AddItem "20"
-        .AddItem "40"
-        .AddItem "60"
-        .AddItem "80"
-        .AddItem "100"
-    End With
+    'With cFeedRate
+    '    .AddItem "20"
+    '    .AddItem "40"
+    '    .AddItem "60"
+    '    .AddItem "80"
+    '    .AddItem "100"
+    'End With
     
-    cFeedRate.Text = 20
+    'cFeedRate.Text = 20
     
     
     
@@ -1129,7 +1113,7 @@ Private Sub cmdOpenFile()
 
     If fName <> "" Then
         
-        
+        LastExportPath = ""
         
         ' Reset pan and zoom settings
         
@@ -1180,30 +1164,8 @@ Private Sub cmdOpenFile()
 End Sub
 
 Private Sub cmdExport()
-    Dim fName As String
-
+    frmExport.Show , Me
     
-    On Error GoTo done
-    
-    With COMDLG
-        
-        .FileName = getFolderNameFromPath(.FileName) & "\" & getFileNameNoExten(getFileNameFromPath(.FileName)) & ".ngc"
-        
-        .Filter = "GCODE Files (*.ngc)|*.ngc"
-        
-        .DialogTitle = "Export GCODE"
-        .ShowSave
-        fName = .FileName
-    End With
-    
-    On Error GoTo 0
-    
-    
-    If fName <> "" Then
-        exportGCODE fName, Val(cFeedRate.Text), TB1.ButtonChecked("zplunge")
-    End If
-
-done:
 
 End Sub
 
@@ -1863,7 +1825,7 @@ Function doPages()
             zoomToFit
             
             fileSavePath = Replace(fName, "NN.ngc", Format(pCount, "000") & ".ngc", , , vbTextCompare)
-            exportGCODE fileSavePath, Val(cFeedRate.Text), TB1.ButtonChecked("zplunge")
+            exportGCODE fileSavePath, 20, False, False, 0, False, 0, 0
             'MsgBox "Page " & pCount & " - Shape " & p
             
             DoEvents
@@ -2077,7 +2039,7 @@ Function doPagesOld()
                 
                 'MsgBox "This is page " & pCount
                 
-                exportGCODE "e:\temp\sign\page" & Format(pCount, "00") & ".ngc", Val(cFeedRate.Text), TB1.ButtonChecked("zplunge")
+                'exportGCODE "e:\temp\sign\page" & Format(pCount, "00") & ".ngc", Val(cFeedRate.Text), TB1.ButtonChecked("zplunge")
                 
                 DoEvents
                 Sleep 100

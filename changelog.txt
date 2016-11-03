@@ -1,3 +1,11 @@
+5:07 PM 11/3/2016
+Version 1.2.3 - Thanks to f3ndot
+
+- Fixed issue that was preventing the app from running under Wine, when the layer names were blank
+- Added units to the scale box
+- Added application icon
+
+
 5:05 PM 10/9/2016
 Version 1.2.2 
 - Added new Export window, moving all of the export settings into this window.

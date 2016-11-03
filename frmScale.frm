@@ -6,6 +6,7 @@ Begin VB.Form frmScale
    ClientLeft      =   45
    ClientTop       =   435
    ClientWidth     =   3855
+   Icon            =   "frmScale.frx":0000
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
@@ -77,6 +78,42 @@ Begin VB.Form frmScale
       TabIndex        =   1
       Top             =   240
       Width           =   1335
+   End
+   Begin VB.Label Label5 
+      AutoSize        =   -1  'True
+      Caption         =   "inch"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   195
+      Left            =   2700
+      TabIndex        =   10
+      Top             =   720
+      Width           =   285
+   End
+   Begin VB.Label Label4 
+      AutoSize        =   -1  'True
+      Caption         =   "inch"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   195
+      Left            =   2700
+      TabIndex        =   9
+      Top             =   300
+      Width           =   285
    End
    Begin VB.Label Label3 
       Caption         =   "Scale:"

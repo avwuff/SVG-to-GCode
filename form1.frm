@@ -9,6 +9,7 @@ Begin VB.Form frmInterface
    ClientLeft      =   165
    ClientTop       =   555
    ClientWidth     =   19305
+   Icon            =   "form1.frx":0000
    LinkTopic       =   "Form1"
    ScaleHeight     =   734
    ScaleMode       =   3  'Pixel
@@ -123,7 +124,7 @@ Begin VB.Form frmInterface
       IconSizeY       =   24
       ColourDepth     =   32
       Size            =   31980
-      Images          =   "form1.frx":0000
+      Images          =   "form1.frx":8922
       Version         =   131072
       KeyCount        =   13
       Keys            =   "ÿÿÿÿÿÿÿÿÿÿÿÿ"
@@ -309,15 +310,15 @@ Private Sub drawLines()
         End With
     Next
     
-    Dim A As Long
+    Dim a As Long
     
     
     For i = 1 To List1.ListCount
         If List1.Selected(i - 1) Then
-            A = List1.ItemData(i - 1)
-            If A > 0 And A <= UBound(pData) Then
+            a = List1.ItemData(i - 1)
+            If a > 0 And a <= UBound(pData) Then
         
-                With pData(A)
+                With pData(a)
                     
                 
                     Picture1.Circle ((.Points(1).x + panX) * Zoom, (.Points(1).y + panY) * Zoom), 5, vbGreen
@@ -633,10 +634,10 @@ Private Sub List1_Click()
 End Sub
 
 Private Sub List1_DblClick()
-    Dim A As Long
-    A = getListLine
-    If A > 0 Then
-        pData(A).Fillable = Not pData(A).Fillable
+    Dim a As Long
+    a = getListLine
+    If a > 0 Then
+        pData(a).Fillable = Not pData(a).Fillable
         updateList
     End If
     
@@ -645,17 +646,17 @@ End Sub
 
 Function getListLine() As Long
 
-    Dim A As Long
-    A = List1.ListIndex
-    If A > -1 Then
-        getListLine = List1.ItemData(A)
+    Dim a As Long
+    a = List1.ListIndex
+    If a > -1 Then
+        getListLine = List1.ItemData(a)
     End If
 
 End Function
 
 Private Sub List1_KeyDown(KeyCode As Integer, Shift As Integer)
 
-    Dim A As Long
+    Dim a As Long
     Dim i As Long
     Dim j As Long
     
@@ -665,10 +666,10 @@ Private Sub List1_KeyDown(KeyCode As Integer, Shift As Integer)
     
     For lI = 1 To List1.ListCount
         If List1.Selected(lI - 1) Then
-            A = List1.ItemData(lI - 1)
+            a = List1.ItemData(lI - 1)
            
             If KeyCode = vbKeyDelete Then
-                pData(A).isDel = True
+                pData(a).isDel = True
                 doDel = True
             End If
         End If
@@ -690,14 +691,14 @@ Private Sub List1_KeyDown(KeyCode As Integer, Shift As Integer)
         drawLines
         updateList
         On Error Resume Next
-        List1.ListIndex = A - 1
+        List1.ListIndex = a - 1
     End If
 
 End Sub
 
 Private Sub List1_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
 
-    Dim A As Long
+    Dim a As Long
     Dim R As Long
     Dim i As Long
     
@@ -711,17 +712,17 @@ Private Sub List1_MouseDown(Button As Integer, Shift As Integer, x As Single, y 
         
         For i = 1 To List1.ListCount
             If List1.Selected(i - 1) Then
-                A = List1.ItemData(i - 1)
+                a = List1.ItemData(i - 1)
         
-                If A > 0 Then
-                    selLines.Add A
+                If a > 0 Then
+                    selLines.Add a
                 End If
             End If
         Next
                 
         If selLines.count = 1 Then
-            A = selLines(1)
-            With pData(A)
+            a = selLines(1)
+            With pData(a)
                 mc.Add 0, "Layer: " & .LayerID, , , mceGrayed
                 mc.Add 1, "Fillable", , .Fillable
                 
@@ -770,8 +771,8 @@ Private Sub List1_MouseDown(Button As Integer, Shift As Integer, x As Single, y 
         End Select
         
         For i = 1 To selLines.count
-            A = selLines(i)
-            With pData(A)
+            a = selLines(i)
+            With pData(a)
                 Select Case R
                     Case 0
                         Exit Sub
@@ -1039,17 +1040,23 @@ Function updateList()
     Dim tLayer As String
         
     Dim b As Scripting.Dictionary
+    Dim c As Dictionary
     
+   On Error GoTo updateList_Error
+
     tLayer = "---"
+    
     List1.Clear
     For i = 1 To UBound(pData)
         If pData(i).LayerID <> tLayer Then
         
+            
             If Not layerInfo.Exists(pData(i).LayerID) Then
-                layerInfo.Add pData(i).LayerID, New Scripting.Dictionary
+                Set c = New Scripting.Dictionary
+                layerInfo.Add pData(i).LayerID, c
             End If
             
-            Set b = layerInfo.Item(pData(i).LayerID)
+            Set b = layerInfo(pData(i).LayerID)
             
             List1.AddItem "[Layer " & pData(i).LayerID & " " & IIf(b.Exists("pausebefore"), "PAUSE", "") & "]"
             tLayer = pData(i).LayerID
@@ -1057,6 +1064,15 @@ Function updateList()
         List1.AddItem "   Line " & i & ": " & IIf(pData(i).Fillable, "F", "") & " (" & UBound(pData(i).Points) & " segs) in " & pData(i).ContainedBy
         List1.ItemData(List1.NewIndex) = i
     Next
+
+   On Error GoTo 0
+   Exit Function
+
+updateList_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure updateList of Form frmInterface", vbCritical, App.ProductName & " ERROR"
+    addToLog "[ERROR]", "In updateList of Form frmInterface", Err.Number, Err.Description
+
 
 End Function
 
@@ -1115,14 +1131,18 @@ Private Sub cmdOpenFile()
         
         LastExportPath = ""
         
+        
         ' Reset pan and zoom settings
         
         Select Case getFileExten(fName)
             Case "svg"
                 
+                
                 layerInfo.RemoveAll
                 
+                
                 parseSVG fName
+                
                 
                 Debug.Print "Drawing ", UBound(pData)
                 
@@ -1130,6 +1150,7 @@ Private Sub cmdOpenFile()
                 'sortByLayers
                 
                 mergeConnectedLines
+                
                 
                 optimizePolys
             
@@ -1146,11 +1167,13 @@ Private Sub cmdOpenFile()
         panY = 0
         Zoom = 1
         
+        
         doFills
         
         zoomToFit
         
         getExtents EXPORT_EXTENTS_X, EXPORT_EXTENTS_Y
+        
         
         
         updateList

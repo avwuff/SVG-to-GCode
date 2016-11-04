@@ -4,7 +4,7 @@ This program can read OpenSCAD, Inkscape, and Illustrator SVG files and produce 
 
 As of version 1.2.3 there is standalone Mac support via emulation under Wine.
 
-![](_graphics/screenshot.png)
+![](_graphics/screenshot2.png)
 
 ## Features
 

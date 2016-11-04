@@ -145,7 +145,7 @@ SetCompressor /solid lzma
 ;Configuration
 
   ;General
-  OutFile "releases\${MUI_PRODUCT}SetupV${MUI_VERSION}.exe"
+  OutFile "..\releases\${MUI_PRODUCT}SetupV${MUI_VERSION}.exe"
   
   Name "${MUI_PRODUCT}"
   

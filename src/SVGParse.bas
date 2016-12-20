@@ -41,6 +41,7 @@ Public GLOBAL_DPI As Double
 
 Public EXPORT_EXTENTS_X As Double, EXPORT_EXTENTS_Y As Double
 Public LastExportPath As String
+Public CurrentFile As String
 
 
 Function parseSVG(inFile As String)
@@ -88,18 +89,19 @@ Function parseSVG(inFile As String)
         ' Read the unit
         Select Case LCase(Replace(SVG.GetAttrValue("width"), realW, ""))
             Case "in" ' no conversion needed
-            Case "mm" ' convert from mm
-                realW = realW / 25.54
+            Case "mm", "" ' convert from mm
+                realW = realW / 25.4
             Case "cm" ' convert from cm
                 realW = realW / 2.54
+        
         End Select
         
         realH = Val(SVG.GetAttrValue("height"))
         ' Read the unit
         Select Case LCase(Replace(SVG.GetAttrValue("height"), realH, ""))
             Case "in" ' no conversion needed
-            Case "mm" ' convert from mm
-                realH = realH / 25.54
+            Case "mm", "" ' convert from mm
+                realH = realH / 25.4
             Case "cm" ' convert from cm
                 realH = realH / 2.54
         End Select
@@ -333,7 +335,7 @@ End Function
 
 Function parseCircle(cX As Double, cY As Double, Radi As Double)
 
-    Dim a As Double
+    Dim A As Double
     Dim x As Double, y As Double
     Dim rr As Long
     
@@ -341,10 +343,10 @@ Function parseCircle(cX As Double, cY As Double, Radi As Double)
     If Radi > 100 Then rr = 1
     
     
-    For a = 0 To 360 Step rr
+    For A = 0 To 360 Step rr
         
-        x = Cos(a * (PI / 180)) * Radi + cX
-        y = Sin(a * (PI / 180)) * Radi + cY
+        x = Cos(A * (PI / 180)) * Radi + cX
+        y = Sin(A * (PI / 180)) * Radi + cY
         
         addPoint x, y
         
@@ -358,7 +360,7 @@ End Function
 
 Function parseEllipse(cX As Double, cY As Double, RadiX As Double, RadiY As Double)
 
-    Dim a As Double
+    Dim A As Double
     Dim x As Double, y As Double
     Dim rr As Long
     
@@ -366,10 +368,10 @@ Function parseEllipse(cX As Double, cY As Double, RadiX As Double, RadiY As Doub
     If RadiX > 100 Or RadiY > 100 Then rr = 1
     
     
-    For a = 0 To 360 Step rr
+    For A = 0 To 360 Step rr
         
-        x = Cos(a * (PI / 180)) * RadiX + cX
-        y = Sin(a * (PI / 180)) * RadiY + cY
+        x = Cos(A * (PI / 180)) * RadiX + cX
+        y = Sin(A * (PI / 180)) * RadiY + cY
         
         addPoint x, y
         
@@ -440,7 +442,7 @@ Function transformLine(lineID As Long, transformText As String)
     
 End Function
 
-Function multiplyLineByMatrix(polyID As Long, a As Double, b As Double, c As Double, D As Double, e As Double, f As Double)
+Function multiplyLineByMatrix(polyID As Long, A As Double, b As Double, c As Double, D As Double, e As Double, f As Double)
     ' Miltiply a line/poly by a transformation matrix
     ' [ A C E ]
     ' [ B D F ]
@@ -455,7 +457,7 @@ Function multiplyLineByMatrix(polyID As Long, a As Double, b As Double, c As Dou
     With pData(polyID)
         For j = 1 To UBound(.Points)
             oldPoint = .Points(j)
-            .Points(j).x = (a * oldPoint.x) + (c * oldPoint.y) + e
+            .Points(j).x = (A * oldPoint.x) + (c * oldPoint.y) + e
             .Points(j).y = (b * oldPoint.x) + (D * oldPoint.y) + f
         Next
     End With
@@ -2014,10 +2016,10 @@ Function optimizePolys()
         
 End Function
 
-Public Sub SwapLine(ByRef a As typLine, ByRef b As typLine)
+Public Sub SwapLine(ByRef A As typLine, ByRef b As typLine)
     Dim c As typLine
-    c = a
-    a = b
+    c = A
+    A = b
     b = c
 
 End Sub

@@ -438,5 +438,10 @@ Private Sub Form_Load()
     txtMM.Text = GetSet("RaiseDist", "0.5")
     txtPath.Text = LastExportPath
     
+    
+    If txtPath = "" Then
+        txtPath = getFolderNameFromPath(CurrentFile) & "\" & getFileNameNoExten(getFileNameFromPath(CurrentFile)) & ".ngc"
+
+    End If
 
 End Sub

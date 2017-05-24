@@ -24,7 +24,7 @@ As of version 1.2.3 there is standalone Mac support via emulation under Wine.
 
 ### macOS/Mac OS X
 
-**Download [SVGtoGCODE Standalone.app](releases/Mac/SVGtoGCODE Standalone.zip)** (78.3 MB)
+**Download [SVGtoGCODE Standalone.app](releases/Mac/SVGtoGCODE%20Standalone.zip)** (78.3 MB)
 
 If you already have Wine installed (preferably through [WineBottler](http://winebottler.kronenberg.org/)), you can use the slimmer app:
 

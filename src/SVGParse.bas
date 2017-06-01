@@ -2076,7 +2076,7 @@ Function exportGCODE(outFile As String, feedRate As Double, PlungeZ As Boolean, 
         
         ' Go to the corners
         Print #f, "G20 (Units are in Inches)"
-        Print #f, "F" & Round(feedRate, 5)
+        Print #f, "F" & Format(feedRate, "0.00000")
         Print #f, "G61 (Go to exact corners)" ' Added Sep 21, 2016
         
         If PPIMode Then
@@ -2086,7 +2086,7 @@ Function exportGCODE(outFile As String, feedRate As Double, PlungeZ As Boolean, 
         If LoopMode Then
         
             Print #f, "#201 = " & Loops & " (number of passes)"
-            Print #f, "#200 = " & Round(RaiseDist * 0.0393701, 6) & " (move the bed up incrementally by this much in inches)"
+            Print #f, "#200 = " & Format(RaiseDist * 0.0393701, "0.000000") & " (move the bed up incrementally by this much in inches)"
             Print #f, "#300 = 0 (bed movement distance storage variable)"
             Print #f, "#100 = 1 (layer number storage variable)"
             
@@ -2142,7 +2142,7 @@ Function exportGCODE(outFile As String, feedRate As Double, PlungeZ As Boolean, 
                                 ' Bring the W back up
                                 Print #1, "G0 W0"
                                 ' Reset the feed rate
-                                Print #f, "F" & Round(feedRate, 5)
+                                Print #f, "F" & Format(feedRate, "0.00000")
                             End If
                             
                             tLayer = .LayerID
@@ -2161,7 +2161,7 @@ Function exportGCODE(outFile As String, feedRate As Double, PlungeZ As Boolean, 
                                 With .Points(j)
                                     
                                     If j = 1 Then ' First point, just GO there.
-                                        Print #f, "G0 X" & Round(.x * scalar, 5) & " Y" & Round((maxY - .y) * scalar, 5)
+                                        Print #f, "G0 X" & Format(.x * scalar, "0.00000") & " Y" & Format((maxY - .y) * scalar, "0.00000")
                                         'Print #f, "G1 z-0.0010"
                                         
                                         ' Turn on the spindle
@@ -2172,7 +2172,7 @@ Function exportGCODE(outFile As String, feedRate As Double, PlungeZ As Boolean, 
                                         End If
                                         'Print #f, "G0 Z -0.0100"
                                     Else
-                                        t = "G1 X" & Round(.x * scalar, 5) & " Y" & Round((maxY - .y) * scalar, 5)
+                                        t = "G1 X" & Format(.x * scalar, "0.00000") & " Y" & Format((maxY - .y) * scalar, "0.00000")
                                         
                                         ' Are we CUTTING to this point, or not?
                                         If lastCutting And pData(i).Points(j - 1).noCut = 1 Then
@@ -2205,9 +2205,9 @@ Function exportGCODE(outFile As String, feedRate As Double, PlungeZ As Boolean, 
                                 For j = UBound(.Points) To 1 Step -1
                                     With .Points(j)
                                         If j = UBound(pData(i).Points) Then ' First point, just GO there.
-                                            Print #f, "G0 X" & Round(.x * scalar, 5) & " Y" & Round((maxY - .y) * scalar, 5)
+                                            Print #f, "G0 X" & Format(.x * scalar, "0.00000") & " Y" & Format((maxY - .y) * scalar, "0.00000")
                                         Else
-                                            t = "G1 X" & Round(.x * scalar, 5) & " Y" & Round((maxY - .y) * scalar, 5)
+                                            t = "G1 X" & Format(.x * scalar, "0.00000") & " Y" & Format((maxY - .y) * scalar, "0.00000")
                                             If lastCutting And pData(i).Points(j - 1).noCut = 1 Then
                                                 t = t & " M63 P0" ' STOP cutting
                                                 lastCutting = False

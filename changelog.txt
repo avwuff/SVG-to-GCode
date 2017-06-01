@@ -1,3 +1,8 @@
+2:52 PM 6/1/2017
+Version 1.2.5
+
+- Switched to 'Format' instead of 'Round' to fix issue with Wine not properly formatting numbers.
+
 6:08 PM 12/20/2016
 Version 1.2.4
 

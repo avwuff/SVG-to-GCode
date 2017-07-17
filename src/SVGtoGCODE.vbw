@@ -1,6 +1,10 @@
 frmInterface = 125, 86, 1891, 1413, , 42, 55, 1808, 1020, C
 Bezier = 100, 100, 1454, 608, C
+<<<<<<< HEAD
 SVGParse = 75, 31, 2221, 1746, 
+=======
+SVGParse = 75, 31, 1841, 1378, Z
+>>>>>>> origin/master
 Polygons = 76, 80, 1934, 1172, C
 GeneralFunctions = 26, 26, 1091, 829, 
 frmScale = 269, 335, 1780, 1278, C, 250, 250, 2016, 1215, C

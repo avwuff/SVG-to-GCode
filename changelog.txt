@@ -1,6 +1,20 @@
+<<<<<<< HEAD
 3:07 PM 7/17/2017
 Version 1.2.4 
 - Heavily sped up importing of large shapes
+=======
+2:52 PM 6/1/2017
+Version 1.2.5
+
+- Switched to 'Format' instead of 'Round' to fix issue with Wine not properly formatting numbers.
+
+6:08 PM 12/20/2016
+Version 1.2.4
+
+- Fixed bug in converting MM to inches
+- Unspecified units are assumed to be mm
+- Export dialog now defaults filename
+>>>>>>> origin/master
 
 5:07 PM 11/3/2016
 Version 1.2.3 - Thanks to f3ndot

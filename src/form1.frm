@@ -310,15 +310,15 @@ Private Sub drawLines()
         End With
     Next
     
-    Dim a As Long
+    Dim A As Long
     
     
     For i = 1 To List1.ListCount
         If List1.Selected(i - 1) Then
-            a = List1.ItemData(i - 1)
-            If a > 0 And a <= UBound(pData) Then
+            A = List1.ItemData(i - 1)
+            If A > 0 And A <= UBound(pData) Then
         
-                With pData(a)
+                With pData(A)
                     
                 
                     Picture1.Circle ((.Points(1).x + panX) * Zoom, (.Points(1).y + panY) * Zoom), 5, vbGreen
@@ -634,10 +634,10 @@ Private Sub List1_Click()
 End Sub
 
 Private Sub List1_DblClick()
-    Dim a As Long
-    a = getListLine
-    If a > 0 Then
-        pData(a).Fillable = Not pData(a).Fillable
+    Dim A As Long
+    A = getListLine
+    If A > 0 Then
+        pData(A).Fillable = Not pData(A).Fillable
         updateList
     End If
     
@@ -646,17 +646,17 @@ End Sub
 
 Function getListLine() As Long
 
-    Dim a As Long
-    a = List1.ListIndex
-    If a > -1 Then
-        getListLine = List1.ItemData(a)
+    Dim A As Long
+    A = List1.ListIndex
+    If A > -1 Then
+        getListLine = List1.ItemData(A)
     End If
 
 End Function
 
 Private Sub List1_KeyDown(KeyCode As Integer, Shift As Integer)
 
-    Dim a As Long
+    Dim A As Long
     Dim i As Long
     Dim j As Long
     
@@ -666,10 +666,10 @@ Private Sub List1_KeyDown(KeyCode As Integer, Shift As Integer)
     
     For lI = 1 To List1.ListCount
         If List1.Selected(lI - 1) Then
-            a = List1.ItemData(lI - 1)
+            A = List1.ItemData(lI - 1)
            
             If KeyCode = vbKeyDelete Then
-                pData(a).isDel = True
+                pData(A).isDel = True
                 doDel = True
             End If
         End If
@@ -691,14 +691,14 @@ Private Sub List1_KeyDown(KeyCode As Integer, Shift As Integer)
         drawLines
         updateList
         On Error Resume Next
-        List1.ListIndex = a - 1
+        List1.ListIndex = A - 1
     End If
 
 End Sub
 
 Private Sub List1_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
 
-    Dim a As Long
+    Dim A As Long
     Dim R As Long
     Dim i As Long
     
@@ -712,17 +712,17 @@ Private Sub List1_MouseDown(Button As Integer, Shift As Integer, x As Single, y 
         
         For i = 1 To List1.ListCount
             If List1.Selected(i - 1) Then
-                a = List1.ItemData(i - 1)
+                A = List1.ItemData(i - 1)
         
-                If a > 0 Then
-                    selLines.Add a
+                If A > 0 Then
+                    selLines.Add A
                 End If
             End If
         Next
                 
         If selLines.count = 1 Then
-            a = selLines(1)
-            With pData(a)
+            A = selLines(1)
+            With pData(A)
                 mc.Add 0, "Layer: " & .LayerID, , , mceGrayed
                 mc.Add 1, "Fillable", , .Fillable
                 
@@ -771,8 +771,8 @@ Private Sub List1_MouseDown(Button As Integer, Shift As Integer, x As Single, y 
         End Select
         
         For i = 1 To selLines.count
-            a = selLines(i)
-            With pData(a)
+            A = selLines(i)
+            With pData(A)
                 Select Case R
                     Case 0
                         Exit Sub
@@ -1119,6 +1119,7 @@ Private Sub cmdOpenFile()
     
     
     Dim fName As String
+    
     With COMDLG
         .Filter = "Supported Files (*.svg, Images)|*.svg;*.bmp;*.jpg;*.gif"
         .CancelError = False
@@ -1128,6 +1129,8 @@ Private Sub cmdOpenFile()
     End With
 
     If fName <> "" Then
+        
+        CurrentFile = fName
         
         LastExportPath = ""
         

@@ -3,7 +3,11 @@
 ;Written by Joost Verburg
 
 !define MUI_PRODUCT "SVGtoGCODE"
+<<<<<<< HEAD
 !define MUI_VERSION "1.2.4"
+=======
+!define MUI_VERSION "1.2.5"
+>>>>>>> origin/master
 SetCompressor /solid lzma
 
 !include "MUI.nsh"
@@ -145,7 +149,7 @@ SetCompressor /solid lzma
 ;Configuration
 
   ;General
-  OutFile "..\releases\${MUI_PRODUCT}SetupV${MUI_VERSION}.exe"
+  OutFile "..\releases\Windows\${MUI_PRODUCT}SetupV${MUI_VERSION}.exe"
   
   Name "${MUI_PRODUCT}"
   

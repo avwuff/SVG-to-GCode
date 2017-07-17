@@ -20,11 +20,7 @@ As of version 1.2.3 there is standalone Mac support via emulation under Wine.
 
 ### Windows
 
-<<<<<<< HEAD
-**Download [SVGtoGCODESetupV1.2.4.exe](releases/Windows/SVGtoGCODESetupV1.2.4.exe) and install**
-=======
-**Download [SVGtoGCODESetupV1.2.5.exe](releases/Windows/SVGtoGCODESetupV1.2.5.exe) and install**
->>>>>>> origin/master
+**Download [SVGtoGCODESetupV1.2.6.exe](releases/Windows/SVGtoGCODESetupV1.2.6.exe) and install**
 
 ### macOS/Mac OS X
 

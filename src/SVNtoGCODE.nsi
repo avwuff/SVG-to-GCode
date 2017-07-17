@@ -3,11 +3,7 @@
 ;Written by Joost Verburg
 
 !define MUI_PRODUCT "SVGtoGCODE"
-<<<<<<< HEAD
-!define MUI_VERSION "1.2.4"
-=======
-!define MUI_VERSION "1.2.5"
->>>>>>> origin/master
+!define MUI_VERSION "1.2.6"
 SetCompressor /solid lzma
 
 !include "MUI.nsh"

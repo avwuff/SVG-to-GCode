@@ -3,7 +3,7 @@
 ;Written by Joost Verburg
 
 !define MUI_PRODUCT "SVGtoGCODE"
-!define MUI_VERSION "1.2.3"
+!define MUI_VERSION "1.2.4"
 SetCompressor /solid lzma
 
 !include "MUI.nsh"
@@ -189,7 +189,7 @@ SetCompressor /solid lzma
   !define MUI_LICENSEPAGE_BUTTON "Continue"
   !define MUI_LICENSEPAGE_TEXT_BOTTOM "All updates to ${MUI_PRODUCT} are listed above, seperated by date and version."
   
-  !insertmacro MUI_PAGE_LICENSE "changelog.txt"
+  !insertmacro MUI_PAGE_LICENSE "..\changelog.txt"
   !insertmacro MUI_PAGE_COMPONENTS
   !insertmacro MUI_PAGE_DIRECTORY
 
@@ -244,7 +244,7 @@ Section "${MUI_PRODUCT}" SecCopyUI
 
   SetOutPath "$INSTDIR"
   File "${MUI_PRODUCT}.exe"
-  File "changelog.txt"
+  File "..\changelog.txt"
   
   ;Store install folder
   WriteRegStr HKCU "Software\${MUI_PRODUCT}" "" $INSTDIR

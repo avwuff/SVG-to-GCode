@@ -8,6 +8,8 @@ End Type
 
 Public Type typLine
     Points() As pointD
+    SpecialNumPoints As Long
+    
     Fillable As Boolean ' Only works for closed paths
     
     ContainedBy As Long ' ID to containing poly
@@ -41,6 +43,8 @@ Public GLOBAL_DPI As Double
 
 Public EXPORT_EXTENTS_X As Double, EXPORT_EXTENTS_Y As Double
 Public LastExportPath As String
+
+Dim hasUnfinishedLine As Boolean
 
 
 Function parseSVG(inFile As String)
@@ -261,6 +265,7 @@ Function parseSVGKids(inEle As ChilkatXml, Optional currentLayer As String)
                         addPoint cX + cW, cY + cH
                         addPoint cX, cY + cH
                         addPoint cX, cY
+                        finishLine
                         
                         pData(currentLine).Fillable = True
                     
@@ -289,15 +294,18 @@ Function parseSVGKids(inEle As ChilkatXml, Optional currentLayer As String)
                         newLine currentLayer
                         addPoint Val(getAttr(x, "x1", "")), Val(getAttr(x, "y1", ""))
                         addPoint Val(getAttr(x, "x2", "")), Val(getAttr(x, "y2", ""))
+                        finishLine
                         
                     Case "polyline"
                         newLine currentLayer
                         parsePolyLine getAttr(x, "points", "")
-                    
+                        finishLine
+                        
                     Case "polygon"
                         newLine currentLayer
                         parsePolyLine getAttr(x, "points", "")
-                    
+                        finishLine
+                        
                         pData(currentLine).Fillable = True
                         
                         
@@ -333,7 +341,7 @@ End Function
 
 Function parseCircle(cX As Double, cY As Double, Radi As Double)
 
-    Dim a As Double
+    Dim A As Double
     Dim x As Double, y As Double
     Dim rr As Long
     
@@ -341,10 +349,10 @@ Function parseCircle(cX As Double, cY As Double, Radi As Double)
     If Radi > 100 Then rr = 1
     
     
-    For a = 0 To 360 Step rr
+    For A = 0 To 360 Step rr
         
-        x = Cos(a * (PI / 180)) * Radi + cX
-        y = Sin(a * (PI / 180)) * Radi + cY
+        x = Cos(A * (PI / 180)) * Radi + cX
+        y = Sin(A * (PI / 180)) * Radi + cY
         
         addPoint x, y
         
@@ -358,7 +366,7 @@ End Function
 
 Function parseEllipse(cX As Double, cY As Double, RadiX As Double, RadiY As Double)
 
-    Dim a As Double
+    Dim A As Double
     Dim x As Double, y As Double
     Dim rr As Long
     
@@ -366,10 +374,10 @@ Function parseEllipse(cX As Double, cY As Double, RadiX As Double, RadiY As Doub
     If RadiX > 100 Or RadiY > 100 Then rr = 1
     
     
-    For a = 0 To 360 Step rr
+    For A = 0 To 360 Step rr
         
-        x = Cos(a * (PI / 180)) * RadiX + cX
-        y = Sin(a * (PI / 180)) * RadiY + cY
+        x = Cos(A * (PI / 180)) * RadiX + cX
+        y = Sin(A * (PI / 180)) * RadiY + cY
         
         addPoint x, y
         
@@ -430,6 +438,11 @@ Function transformLine(lineID As Long, transformText As String)
                 Case "scale" ' scale(-1,-1)
                     pSplit = Split(params, ",")
                     If UBound(pSplit) = 0 Then pSplit = Split(params, " ")
+                    If UBound(pSplit) = 0 Then
+                        ' Handle shitty SVG, such as not having two parameters
+                        ReDim Preserve pSplit(1)
+                        pSplit(1) = pSplit(0)
+                    End If
                     multiplyLineByMatrix lineID, Val(pSplit(0)), 0, 0, Val(pSplit(1)), 0, 0
                     
                 
@@ -440,7 +453,7 @@ Function transformLine(lineID As Long, transformText As String)
     
 End Function
 
-Function multiplyLineByMatrix(polyID As Long, a As Double, b As Double, c As Double, D As Double, e As Double, f As Double)
+Function multiplyLineByMatrix(polyID As Long, A As Double, b As Double, c As Double, D As Double, e As Double, f As Double)
     ' Miltiply a line/poly by a transformation matrix
     ' [ A C E ]
     ' [ B D F ]
@@ -455,7 +468,7 @@ Function multiplyLineByMatrix(polyID As Long, a As Double, b As Double, c As Dou
     With pData(polyID)
         For j = 1 To UBound(.Points)
             oldPoint = .Points(j)
-            .Points(j).x = (a * oldPoint.x) + (c * oldPoint.y) + e
+            .Points(j).x = (A * oldPoint.x) + (c * oldPoint.y) + e
             .Points(j).y = (b * oldPoint.x) + (D * oldPoint.y) + f
         Next
     End With
@@ -519,6 +532,7 @@ Function parsePath(inPath As String, currentLayer As String)
     Dim ptPrevPoint As pointD
     Dim hasPrevPoint As Boolean
     
+    Dim lastUpdate As Long
     
     
     
@@ -594,7 +608,7 @@ Function parsePath(inPath As String, currentLayer As String)
                 addPoint currX, currY
                 
                 
-                pData(currentLine).PathCode = pData(currentLine).PathCode & "Move to " & currX & ", " & currY & vbCrLf
+                'pData(currentLine).PathCode = pData(currentLine).PathCode & "Move to " & currX & ", " & currY & vbCrLf
                 
                 
                 'If Not gotFirstItem Then
@@ -625,7 +639,7 @@ Function parsePath(inPath As String, currentLayer As String)
                 ' Add this point to the line
                 addPoint currX, currY
                 
-                pData(currentLine).PathCode = pData(currentLine).PathCode & "Line to " & currX & ", " & currY & vbCrLf
+                ''pData(currentLine).PathCode = pData(currentLine).PathCode & "Line to " & currX & ", " & currY & vbCrLf
                 
                 If Not gotFirstItem Then startX = currX: startY = currY
                 gotFirstItem = True
@@ -649,7 +663,7 @@ Function parsePath(inPath As String, currentLayer As String)
                 ' Add this point to the line
                 addPoint currX, currY
                 
-                pData(currentLine).PathCode = pData(currentLine).PathCode & "Vertical to " & currX & ", " & currY & vbCrLf
+                'pData(currentLine).PathCode = pData(currentLine).PathCode & "Vertical to " & currX & ", " & currY & vbCrLf
                 
                 If Not gotFirstItem Then startX = currX: startY = currY
                 gotFirstItem = True
@@ -672,7 +686,7 @@ Function parsePath(inPath As String, currentLayer As String)
     
                 ' Add this point to the line
                 addPoint currX, currY
-                pData(currentLine).PathCode = pData(currentLine).PathCode & "Horiz to " & currX & ", " & currY & vbCrLf
+                'pData(currentLine).PathCode = pData(currentLine).PathCode & "Horiz to " & currX & ", " & currY & vbCrLf
                 
                 If Not gotFirstItem Then startX = currX: startY = currY
                 gotFirstItem = True
@@ -726,7 +740,7 @@ Function parsePath(inPath As String, currentLayer As String)
                 
                 parseArcSegment Val(token1), Val(token2), Val(token3), pt0, pt1, (token4 = "1"), (token5 = "1")
                 
-                pData(currentLine).PathCode = pData(currentLine).PathCode & "Partial Arc to " & currX & ", " & currY & vbCrLf
+                'pData(currentLine).PathCode = pData(currentLine).PathCode & "Partial Arc to " & currX & ", " & currY & vbCrLf
                 
                 If Not gotFirstItem Then startX = currX: startY = currY
                 gotFirstItem = True
@@ -785,7 +799,7 @@ Function parsePath(inPath As String, currentLayer As String)
                 ptPrevPoint = reflectAbout(pt2, pt3)
                 hasPrevPoint = True
                 
-                pData(currentLine).PathCode = pData(currentLine).PathCode & "Bezier to " & currX & ", " & currY & vbCrLf
+                'pData(currentLine).PathCode = pData(currentLine).PathCode & "Bezier to " & currX & ", " & currY & vbCrLf
                 
                 If Not gotFirstItem Then startX = currX: startY = currY
                 gotFirstItem = True
@@ -833,7 +847,7 @@ Function parsePath(inPath As String, currentLayer As String)
                 hasPrevPoint = True
                 
             
-                pData(currentLine).PathCode = pData(currentLine).PathCode & "3Bezier to " & currX & ", " & currY & vbCrLf
+                'pData(currentLine).PathCode = pData(currentLine).PathCode & "3Bezier to " & currX & ", " & currY & vbCrLf
             
                 If Not gotFirstItem Then startX = currX: startY = currY
                 gotFirstItem = True
@@ -880,7 +894,7 @@ Function parsePath(inPath As String, currentLayer As String)
                 ptPrevPoint = reflectAbout(pt1, pt2)
                 hasPrevPoint = True
                 
-                pData(currentLine).PathCode = pData(currentLine).PathCode & "3Bezier to " & currX & ", " & currY & vbCrLf
+                'pData(currentLine).PathCode = pData(currentLine).PathCode & "3Bezier to " & currX & ", " & currY & vbCrLf
             
                 If Not gotFirstItem Then startX = currX: startY = currY
                 gotFirstItem = True
@@ -916,7 +930,7 @@ Function parsePath(inPath As String, currentLayer As String)
                 ptPrevPoint = reflectAbout(ptPrevPoint, pt1)
                 hasPrevPoint = True
                 
-                pData(currentLine).PathCode = pData(currentLine).PathCode & "3Bezier to " & currX & ", " & currY & vbCrLf
+                'pData(currentLine).PathCode = pData(currentLine).PathCode & "3Bezier to " & currX & ", " & currY & vbCrLf
             
                 If Not gotFirstItem Then startX = currX: startY = currY
                 gotFirstItem = True
@@ -938,7 +952,7 @@ Function parsePath(inPath As String, currentLayer As String)
                 'gotFirstItem = False
                 
                 
-                pData(currentLine).PathCode = pData(currentLine).PathCode & "End Shape" & vbCrLf
+                'pData(currentLine).PathCode = pData(currentLine).PathCode & "End Shape" & vbCrLf
             
                 
             
@@ -947,6 +961,14 @@ Function parsePath(inPath As String, currentLayer As String)
                 
             
         End Select
+        
+        
+        If pos > lastUpdate + 2000 Then
+            lastUpdate = pos
+            frmInterface.Caption = "Parsing path: " & pos & " / " & Len(inPath)
+            DoEvents
+        End If
+        
     Loop
     
     
@@ -1236,6 +1258,11 @@ Function angleFromPoint(pCenter As pointD, pPoint As pointD) As Double
 End Function
 
 Function newLine(Optional theLayer As String)
+    
+    If hasUnfinishedLine Then finishLine
+    
+    
+    
     currentLine = UBound(pData) + 1
     ' Set up this line
     ReDim Preserve pData(currentLine)
@@ -1244,6 +1271,16 @@ Function newLine(Optional theLayer As String)
     pData(currentLine).LayerID = theLayer
     
 
+End Function
+
+Function finishLine()
+    If hasUnfinishedLine Then
+        hasUnfinishedLine = False
+        
+        ' Remove the excess
+        ReDim Preserve pData(currentLine).Points(pData(currentLine).SpecialNumPoints)
+    End If
+    
 End Function
 
 Function addPoint(x As Double, y As Double, Optional noCutLineSegment As Boolean)
@@ -1256,10 +1293,24 @@ Function addPoint(x As Double, y As Double, Optional noCutLineSegment As Boolean
             'Debug.Print "same as last point"
             
         Else
-            n = UBound(.Points) + 1
-            ReDim Preserve .Points(n)
+        
+            ' Once we get over 5000 points, we enter a special allocation mode.
+            If UBound(.Points) > 5000 Then
+                hasUnfinishedLine = True
+                
+                ' Allocate in blocks of 5000 at a time.
+                n = .SpecialNumPoints + 1
+                If n > UBound(.Points) Then ReDim Preserve .Points(UBound(.Points) + 5000)
+                
+            Else
+                n = UBound(.Points) + 1
+                ReDim Preserve .Points(n)
+            End If
+            
+        
             .Points(n).x = x
             .Points(n).y = y
+            .SpecialNumPoints = n
             If noCutLineSegment Then .Points(n).noCut = 1
         End If
     End With
@@ -2014,10 +2065,10 @@ Function optimizePolys()
         
 End Function
 
-Public Sub SwapLine(ByRef a As typLine, ByRef b As typLine)
+Public Sub SwapLine(ByRef A As typLine, ByRef b As typLine)
     Dim c As typLine
-    c = a
-    a = b
+    c = A
+    A = b
     b = c
 
 End Sub

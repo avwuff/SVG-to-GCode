@@ -1,3 +1,7 @@
+3:07 PM 7/17/2017
+Version 1.2.4 
+- Heavily sped up importing of large shapes
+
 5:07 PM 11/3/2016
 Version 1.2.3 - Thanks to f3ndot
 

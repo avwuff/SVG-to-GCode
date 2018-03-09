@@ -999,6 +999,7 @@ Function getPinSeg(pStart As pointD, pEnd As pointD)
     Dim segments As Double
     segments = 250 * D
     
+    If segments = 0 Then segments = 1
     
     
     getPinSeg = Max(0.01, 1 / segments)

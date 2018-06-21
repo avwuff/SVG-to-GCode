@@ -1001,8 +1001,14 @@ Function getPinSeg(pStart As pointD, pEnd As pointD)
     
     If segments = 0 Then segments = 1
     
+    If segments = 0 Then ' a zero-length line? what's the point
+        getPinSeg = 0.01
+    Else
+        getPinSeg = Max(0.01, 1 / segments)
     
-    getPinSeg = Max(0.01, 1 / segments)
+    End If
+    
+    
     
                
 
@@ -1347,6 +1353,7 @@ Function extractToken(ByRef inPath As String, ByRef pos As Long) As String
     Dim seenMinus As Boolean
     Dim startPos As Long
     Dim seenE As Boolean
+    Dim seenPeriod As Boolean
     
     startPos = pos
     
@@ -1356,6 +1363,15 @@ Function extractToken(ByRef inPath As String, ByRef pos As Long) As String
         
         Select Case char
             ' Only accept numbers
+            Case "." ' A period can be seen anywhere in the number, but if a second period is found it means we must exit
+                If seenPeriod Then
+                    Exit Do
+                Else
+                    seenPeriod = True
+                    build = build & char
+                    pos = pos + 1
+                End If
+            
             Case "-"
                 If seenE Then
                     build = build & char
